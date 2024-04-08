@@ -1,0 +1,82 @@
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+struct row
+{
+    int number;
+    char operation;
+};
+vector<int> numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+string expression;
+
+bool backtrack(int target, int index, int current_sum, string current_expr, row list[], row new_list[])
+{
+    if (index == numbers.size())
+    {
+        if (current_sum == target)
+        {
+            for (int i = 0; i < numbers.size(); i++)
+            {
+                new_list[i] = list[i];
+            }
+            expression = current_expr;
+            return true;
+        }
+        return false;
+    }
+    list[index].number = numbers[index];
+    list[index].operation = '+';
+    if (backtrack(target, index + 1, current_sum + numbers[index], current_expr + "+" + to_string(numbers[index]), list, new_list))
+    {
+        return true;
+    }
+    list[index].operation = '*';
+    int prevOperand = numbers[index - 1];
+    if (prevOperand != 0 && backtrack(target, index + 1, current_sum - prevOperand + (prevOperand * numbers[index]), current_expr + "*" + to_string(numbers[index]), list, new_list))
+    {
+        return true;
+    }
+    list[index].operation = ' ';
+    if (backtrack(target, index + 1, current_sum, current_expr + to_string(numbers[index]), list, new_list))
+    {
+        return true;
+    }
+    return false;
+}
+//-----------------------------------------------
+string Arithmetic_expression(int number, row list[], row new_list[])
+{
+    for (int i = 0; i < numbers.size(); i++)
+    {
+        list[i].number = numbers[i];
+        list[i].operation = ' ';
+    }
+    if (backtrack(number, 1, numbers[0], to_string(numbers[0]), list, new_list))
+    {
+        string expr;
+        for (int i = 0; i < numbers.size(); i++)
+        {
+            if (new_list[i].operation != ' ')
+            {
+                expr += new_list[i].operation;
+            }
+            expr += to_string(new_list[i].number);
+        }
+        return "Backtrack Result: " + expr + " = " + to_string(number);
+    }
+    else
+    {
+        return "Backtrack Result: Number cannot be achieved";
+    }
+}
+//-----------------------------------------------
+int main()
+{
+    int number;
+    cout << "Enter your number: ";
+    cin >> number;
+    row list[9];
+    row new_list[9];
+    cout << Arithmetic_expression(number, list, new_list) << endl;
+}
