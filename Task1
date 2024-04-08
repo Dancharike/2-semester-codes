@@ -1,0 +1,68 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+struct Coordinates
+{
+    double x,y;
+};
+bool do_figures_intersect(Coordinates A,Coordinates B,Coordinates C,Coordinates D,Coordinates E,Coordinates F,Coordinates G,Coordinates H)
+{
+    double minX1 = min(A.x, min(B.x, min(C.x, D.x)));
+    double maxX1 = max(A.x, max(B.x, max(C.x, D.x)));
+    double minY1 = min(A.y, min(B.y, min(C.y, D.y)));
+    double maxY1 = max(A.y, max(B.y, max(C.y, D.y)));
+    double minX2 = min(E.x, min(F.x, min(G.x, H.x)));
+    double maxX2 = max(E.x, max(F.x, max(G.x, H.x)));
+    double minY2 = min(E.y, min(F.y, min(G.y, H.y)));
+    double maxY2 = max(E.y, max(F.y, max(G.y, H.y)));
+    double minX = max(minX1, minX2);
+    double maxX = min(maxX1, maxX2);
+    double minY = max(minY1, minY2);
+    double maxY = min(maxY1, maxY2);
+
+    for (int x=floor(minX);x<=ceil(maxX);x++)
+    {
+        for (int y=floor(minY);y<=ceil(maxY);y++)
+        {
+            if (x>=A.x && x<=B.x && y>=A.y && y<=D.y && x>=E.x && x<=F.x && y>=E.y && y<=H.y)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+//--------------------------------------
+int main()
+{
+
+    Coordinates A,B,C,D,E,F,G,H;
+    cout<<"Enter coordinates for the first figure (A, B, C, D):"<<endl;
+    cout<<"A(x1 y1):";
+    cin>>A.x>>A.y;
+    cout<<"B(x2 y2): ";
+    cin>>B.x>>B.y;
+    cout<<"C(x3 y3):";
+    cin>>C.x>>C.y;
+    cout<<"D(x4 y4):";
+    cin>>D.x>>D.y;
+    cout<<"Enter coordinates for the second figure (E, F, G, H):"<<endl;
+    cout<<"E(x5 y5):";
+    cin>>E.x>>E.y;
+    cout<<"F(x6 y6):";
+    cin>>F.x>>F.y;
+    cout<<"G(x7 y7):";
+    cin>>G.x>>G.y;
+    cout<<"H(x8 y8):";
+    cin>>H.x>>H.y;
+    bool intersect=do_figures_intersect(A,B,C,D,E,F,G,H);
+    if (intersect)
+    {
+        cout<<"Intersect"<<endl;
+    }
+    else
+    {
+        cout<<"Do Not Intersect"<<endl;
+    }
+}
+//--------------------------------------
