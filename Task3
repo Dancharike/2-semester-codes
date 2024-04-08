@@ -1,0 +1,60 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+using namespace std;
+string generate_HTML_Structure()
+{
+    return "<!DOCTYPE html>\n"
+           "<html>\n"
+           "<head>\n"
+           "<title>My page</title>\n"
+           "</head>\n"
+           "<body>\n";
+} //standard HTML structure generating
+//----------------------------------------
+string generate_Table(int rows, int cols)
+{
+    string table_HTML = "<table border=\"1\">\n";
+    for (int i = 0; i < rows; i++)
+    {
+        table_HTML += "<tr>\n";
+        for (int j = 0; j < cols; j++)
+        {
+            table_HTML += "<td>Cell</td>\n";
+        }
+        table_HTML += "</tr>\n";
+    }
+    table_HTML += "</table>\n";
+    return table_HTML;
+} //creating a table with specified rows and columns
+//----------------------------------------
+void write_To_File(const string& html_Content)
+{
+    ofstream output_File("output.html");
+    if (output_File.is_open())
+    {
+        output_File << html_Content;
+        output_File.close();
+        cout << "HTML file generated successfully!" << endl;
+    }
+    else
+    {
+        cerr << "Unable to open file for writing." << endl;
+    }
+} //part of code that writes generated HTML code to a file
+//----------------------------------------
+int main()
+{
+    cout << "HTML Page Generator" << endl;
+    cout << "===================" << endl;
+    string html_Content = generate_HTML_Structure(); //generating HTML structure
+
+    int rows, cols;
+    cout << "Enter the number of rows for the table: ";
+    cin >> rows;
+    cout << "Enter the number of columns for the table: ";
+    cin >> cols;
+    html_Content += generate_Table(rows, cols); //table generation
+    html_Content += "</body>\n</html>\n"; //close HTML
+    write_To_File(html_Content); //write HTML content to file
+}
