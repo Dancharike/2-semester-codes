@@ -1,0 +1,117 @@
+#include <iostream>
+#include <vector>
+#include <map>
+#include <algorithm>
+
+using namespace std;
+
+// Drawing structure
+struct Drawing {
+    string name;
+    string creator;
+    string creationDate;
+    string description;
+};
+
+// Function to perform linear search
+int linearSearch(const vector<Drawing>& drawings, const string& key) {
+    for (size_t i = 0; i < drawings.size(); ++i) {
+        if (drawings[i].name == key || drawings[i].creator == key || drawings[i].description == key) {
+            return i; // Return index if found
+        }
+    }
+    return -1; // Return -1 if not found
+}
+
+// Function to perform binary search (assuming drawings are sorted)
+int binarySearch(const vector<Drawing>& drawings, const string& key) {
+    int low = 0;
+    int high = drawings.size() - 1;
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        if (drawings[mid].name == key || drawings[mid].creator == key || drawings[mid].description == key) {
+            return mid; // Return index if found
+        } else if (drawings[mid].name < key || drawings[mid].creator < key || drawings[mid].description < key) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+    return -1; // Return -1 if not found
+}
+
+// Function to display drawing details
+void displayDrawing(const Drawing& drawing) {
+    cout << "Name: " << drawing.name << ", Creator: " << drawing.creator << ", Creation Date: " << drawing.creationDate << ", Description: " << drawing.description << endl;
+}
+
+// Function to display search results
+void displaySearchResults(const vector<Drawing>& drawings, const string& key) {
+    int index = linearSearch(drawings, key); // Perform linear search
+    if (index != -1) {
+        cout << "Linear Search Result:" << endl;
+        displayDrawing(drawings[index]);
+    } else {
+        cout << "Drawing not found using linear search." << endl;
+    }
+
+    index = binarySearch(drawings, key); // Perform binary search
+    if (index != -1) {
+        cout << "Binary Search Result:" << endl;
+        displayDrawing(drawings[index]);
+    } else {
+        cout << "Drawing not found using binary search." << endl;
+    }
+}
+
+// Function to sort drawings by name
+void sortByName(vector<Drawing>& drawings) {
+    sort(drawings.begin(), drawings.end(), [](const Drawing& a, const Drawing& b) {
+        return a.name < b.name;
+    });
+}
+
+// Function to sort drawings by creator
+void sortByCreator(vector<Drawing>& drawings) {
+    sort(drawings.begin(), drawings.end(), [](const Drawing& a, const Drawing& b) {
+        return a.creator < b.creator;
+    });
+}
+
+// Function to sort drawings by creation date
+void sortByCreationDate(vector<Drawing>& drawings) {
+    sort(drawings.begin(), drawings.end(), [](const Drawing& a, const Drawing& b) {
+        return a.creationDate < b.creationDate;
+    });
+}
+
+int main() {
+    // Sample data
+    vector<Drawing> autocadDrawings = {
+            {"Figure_01", "Denis_Kladijev", "2024-04-01", "Motobyke detail"},
+            {"Figure_02", "Denis_Kladijev", "2024-04-02", "Byke detail"},
+            {"Figure_03", "Denis_Kladijev", "2024-04-03", "Gear detail"},
+            {"Figure_04", "Denis_Kladijev", "2024-04-05", "Bracing detail"},
+            {"Figure_06", "Denis_Kladijev", "2024-04-06", "Door knob detail"}
+    };
+
+    // Display original AutoCAD drawings collection
+    cout << "Original AutoCAD Drawings Collection:" << endl;
+    for (const auto& drawing : autocadDrawings) {
+        displayDrawing(drawing);
+    }
+    cout << endl;
+
+    // Search example
+    string searchKey = "Figure_02";
+    cout << "Searching for drawing with name/creator/description: " << searchKey << endl;
+    displaySearchResults(autocadDrawings, searchKey);
+    cout << endl;
+
+    // Sort example
+    cout << "Sorting AutoCAD drawings by name:" << endl;
+    sortByName(autocadDrawings);
+    for (const auto& drawing : autocadDrawings) {
+        displayDrawing(drawing);
+    }
+}
