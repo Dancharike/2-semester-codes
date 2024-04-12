@@ -1,12 +1,12 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <iomanip> // Include for setw
-
+#include <algorithm>
+#include <iomanip>
 using namespace std;
-
 // Student structure
-struct student {
+struct Student
+{
     char name[10];
     string id;
     int age;
@@ -16,47 +16,148 @@ struct student {
 };
 
 // Function to perform linear search
-int linear_search(const vector<student>& students, const string& key) {
-    for (size_t i = 0; i < students.size(); ++i) {
-        if (students[i].id == key) {
+int linear_search(const vector<Student>& students, const string& key)
+{
+    for (size_t i = 0; i < students.size(); i++)
+    {
+        if (students[i].id == key)
+        {
             return i; // Return index if found
         }
     }
     return -1; // Return -1 if not found
 }
 
+// Function to perform binary search
+int binary_search(const vector<Student>& students, const string& key)
+{
+    int low = 0;
+    int high = students.size() - 1;
+    while (low <= high)
+    {
+        int mid = (low + high) / 2;
+        if (students[mid].id == key)
+        {
+            return mid; // Return index if found
+        }
+        else if (students[mid].id < key)
+        {
+            low = mid + 1;
+        } else
+        {
+            high = mid - 1;
+        }
+    }
+    return -1; // Return -1 if not found
+}
+
 // Function to display student details
-void display_student(const student& student) {
+void display_student(const Student& student)
+{
     cout << setw(10) << student.name << setw(7) << student.id << setw(5) << student.age << setw(20) << student.major << setw(15) << student.average_mark << setw(10) << student.study_contract_status << endl;
 }
 
+// Function to display student details for case 2
+void display_student_case2(const Student& student)
+{
+    cout << setw(7) << student.id << setw(10) << student.name << setw(5) << student.age << setw(20) << student.major << setw(15) << student.average_mark << setw(10) << student.study_contract_status << endl;
+}
+
+// Function to display student details for case 3
+void display_student_case3(const Student& student)
+{
+    cout << setw(15) << student.average_mark << setw(10) << student.name << setw(7) << student.id << setw(5) << student.age << setw(20) << student.major << setw(10) << student.study_contract_status << endl;
+}
+
 // Function to display all students
-void display_all_students(const vector<student>& students) {
+void display_all_students(const vector<Student>& students)
+{
     cout << setw(10) << "Name~" << setw(7) << "Id~" << setw(5) << "Age~" << setw(20) << "Major~" << setw(15) << "Average mark~" << setw(10) << " Study contract status" << endl;
-    for (const auto& student : students) {
+    for (const auto& student : students)
+    {
         display_student(student);
     }
+    cout << "____________________________________" << endl;
 }
 
 // Function to find student by ID
-void find_student_by_id(const vector<student>& students) {
+void find_student_by_id(const vector<Student>& students)
+{
     string search_id;
     cout << "Enter student ID: ";
     cin >> search_id;
 
     int index = linear_search(students, search_id);
-    if (index != -1) {
+    if (index != -1)
+    {
         cout << "Student with ID " << search_id << " found:" << endl;
         cout << setw(10) << "Name~" << setw(7) << "Id~" << setw(5) << "Age~" << setw(20) << "Major~" << setw(15) << "Average mark~" << setw(10) << " Study contract status" << endl;
         display_student(students[index]);
-    } else {
+    }
+    else
+    {
         cout << "Student with ID " << search_id << " not found." << endl;
     }
+    cout << "____________________________________" << endl;
 }
 
-int main() {
-    // Sample data with Lithuanian names
-    vector<student> students = {
+// Function to find students by age
+void find_students_by_age(const vector<Student>& students)
+{
+    int search_age;
+    cout << "Enter student age: ";
+    cin >> search_age;
+
+    vector<Student> found_students;
+    for (const auto& student : students)
+    {
+        if (student.age == search_age)
+        {
+            found_students.push_back(student);
+        }
+    }
+
+    if (!found_students.empty())
+    {
+        cout << "Students with age " << search_age << " found:" << endl;
+        cout << setw(10) << "Name~" << setw(7) << "Id~" << setw(5) << "Age~" << setw(20) << "Major~" << setw(15) << "Average mark~" << setw(10) << " Study contract status" << endl;
+        for (const auto& student : found_students)
+        {
+            display_student(student);
+        }
+    }
+    else
+    {
+        cout << "No students found with age " << search_age << "." << endl;
+    }
+    cout << "____________________________________" << endl;
+}
+
+// Function to sort students by ID
+void sort_students_by_id(vector<Student>& students)
+{
+    sort(students.begin(), students.end(), [](const Student& a, const Student& b)
+    {
+        return a.id < b.id;
+    });
+    cout << "Students sorted by ID." << endl;
+    cout << "____________________________________" << endl;
+}
+
+// Function to sort students by average mark
+void sort_students_by_average_mark(vector<Student>& students)
+{
+    sort(students.begin(), students.end(), [](const Student& a, const Student& b)
+    {
+        return a.average_mark > b.average_mark;
+    });
+    cout << "Students sorted by average mark." << endl;
+    cout << "____________________________________" << endl;
+}
+//---------------------------------------
+int main()
+{
+    vector<Student> students = {
             {"Jonas", "S001", 20, "Computer Science", 8.5, "paid"},
             {"Marius", "S002", 21, "Engineering", 7.9, "free"},
             {"Giedre", "S003", 19, "Mathematics", 9.1, "paid"},
@@ -69,28 +170,42 @@ int main() {
             {"Ieva", "S010", 21, "Sociology", 8.6, "free"}
     };
 
-    // Menu
     int choice;
-    do {
+    do
+    {
         cout << "\nMenu:" << endl;
         cout << "1. List all existing students" << endl;
-        cout << "2. Find student by ID" << endl;
-        cout << "3. Close program" << endl;
+        cout << "2. Sort students by ID" << endl;
+        cout << "3. Sort students by average mark" << endl;
+        cout << "4. Find student by ID" << endl;
+        cout << "5. Find students by age" << endl;
+        cout << "6. Close program" << endl;
         cout << "Enter your choice: ";
         cin >> choice;
 
-        switch (choice) {
+        switch (choice)
+        {
             case 1:
                 display_all_students(students);
                 break;
             case 2:
-                find_student_by_id(students);
+                sort_students_by_id(students);
                 break;
             case 3:
+                sort_students_by_average_mark(students);
+                break;
+            case 4:
+                find_student_by_id(students);
+                break;
+            case 5:
+                find_students_by_age(students);
+                break;
+            case 6:
                 char confirm;
                 cout << "Are you sure you want to close the program? (Y/N): ";
                 cin >> confirm;
-                if (toupper(confirm) == 'Y') {
+                if (toupper(confirm) == 'Y')
+                {
                     cout << "Closing program..." << endl;
                     return 0;
                 }
@@ -102,3 +217,4 @@ int main() {
     while (true);
     return 0;
 }
+
