@@ -1,0 +1,52 @@
+#include <iostream>
+#include <fstream>
+#include <cstdlib>
+
+using namespace std;
+struct line;
+void read(line list[],int &n);
+void write(line list[],int n);
+struct line
+{
+    int number;
+    int first_value;
+    int second_value;
+    string answer;
+};
+
+int main()
+{
+    int n;
+    line list[100];
+    read(list,n);
+    write(list,n);
+}
+//-------------------------------------
+void read(line list[],int &n)
+{
+    ifstream f1("data.txt");
+    if(!f1.is_open())
+    {
+        cerr<<"Error with opening file!"<<endl;
+        exit(1);
+    }
+    f1>>n;
+    f1.ignore();
+    for(int i=0;i<n;i++)
+    {
+        f1>>list[i].number>>list[i].first_value>>list[i].second_value;
+        getline(f1>>ws, list[i].answer);
+    }
+
+    f1.close();
+}
+//-------------------------------------
+void write(line list[],int n)
+{
+    cout<<n<<endl;
+    for(int i=0;i<n;i++)
+    {
+        cout<<list[i].number<<" "<<list[i].first_value<<" "<<list[i].second_value<<" "<<list[i].answer<<endl;
+    }
+}
+//-------------------------------------
