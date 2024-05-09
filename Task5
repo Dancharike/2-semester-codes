@@ -4,49 +4,102 @@
 
 using namespace std;
 struct line;
-void read(line list[],int &n);
-void write(line list[],int n);
+void read(line* &list[],int &n);
+void write(line* list[],int n);
+void list_update(line* &list[],&int n);
 struct line
 {
-    int number;
+    int number; //question/answer id
     int first_value;
     int second_value;
+    string question;
     string answer;
 };
-
+//int lines_number;    //first value of data.txt
 int main()
 {
     int n;
-    line list[100];
+    line* list=nullptr;
     read(list,n);
+    //game_play();
+    list_update();
     write(list,n);
+
+    delete[] list;
 }
 //-------------------------------------
-void read(line list[],int &n)
+void read(line* &list[],int &n)
 {
     ifstream f1("data.txt");
-    if(!f1.is_open())
+    if(!f1.is_open())    //find if txt file can be opened
     {
         cerr<<"Error with opening file!"<<endl;
         exit(1);
     }
     f1>>n;
     f1.ignore();
+    list=new line[n];
     for(int i=0;i<n;i++)
     {
         f1>>list[i].number>>list[i].first_value>>list[i].second_value;
-        getline(f1>>ws, list[i].answer);
+        f1.ignore;
+        if(list[i].first_value!=0 || list[i].second_value!=0)
+        {
+            getline(f1>>ws, list[i].question);
+        }
+        if(list[i].first_value==0 || list[i].second_value==0)
+        {
+            getline(f1>>ws, list[i].answer);
+        }
     }
 
     f1.close();
 }
 //-------------------------------------
-void write(line list[],int n)
+void write(line* list[],int n)
 {
-    cout<<n<<endl;
+    ofstream f1("data.txt");
+    f1<<n<<endl;
     for(int i=0;i<n;i++)
     {
-        cout<<list[i].number<<" "<<list[i].first_value<<" "<<list[i].second_value<<" "<<list[i].answer<<endl;
+        f1<<list[i].number<<" "<<list[i].first_value<<" "<<list[i].second_value<<" ";
+        if(list[i].first_value!=0 || list[i].second_value!=0)
+        {
+            f1<<list[i].question<<endl;
+        }
+        else
+        {
+            f1<<list[i].answer<<endl;
+        }
     }
+
+    f1.close();
 }
 //-------------------------------------
+void list_update(line* &list[],&int n)
+{
+    string question;
+    string correct_answer;
+    cout<<"What is the correct answer?: ";
+    getline(cin,correct_answer);
+    cout<<"What is the question distinguishing it?: ";
+    getline(cin,question);
+
+    line* new_list=new line[n+2];  //makes array capacity bigger on 2 elements
+    for (int i=0;i<n;i++)
+    {
+        new_list[i]=list[i];
+    }
+    new_list[n].info=question;
+    new_list[n].number=n;
+    new_list[n].first_value=0;
+    new_list[n].second_value=0;
+    new_list[n+1].info=correct_answer;
+    new_list[n+1].number=n+1;
+    new_list[n+1].first_value=0;
+    new_list[n+1].second_value=0;
+
+    delete[] list;
+    list=new_list;
+    n+=2;
+}
