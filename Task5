@@ -3,11 +3,6 @@
 #include <cstdlib>
 
 using namespace std;
-struct line;
-void read(line* &list, int &n);
-void write(line* list, int n);
-void list_update(line* &list, int &n);
-
 struct line
 {
     int number;
@@ -16,13 +11,16 @@ struct line
     string question;
     string answer;
 };
-
+void read(line* &list, int &n);
+void write(line* list, int n);
+void list_update(line* &list, int &n);
+void game_play(line* list, int &n);
 int main()
 {
     int n;
     line* list = 0;
     read(list, n);
-    game_play();
+    game_play(list, n);
     list_update(list, n);
     write(list, n);
 
@@ -60,7 +58,7 @@ void read(line* &list, int &n)
 //------------------------------------------------------
 void write(line* list, int n)
 {
-    ofstream f1("data.txt");
+    ofstream f1("data_updated.txt");
     f1 << n << endl;
     for (int i = 0; i < n; ++i)
     {
@@ -105,3 +103,26 @@ void list_update(line* &list, int &n)
     n += 2;
 }
 //------------------------------------------------------
+void game_play(line* list, int &n)
+{
+    int ind=1;
+    char input;
+    while(list[ind].first_value != 0 || list[ind].second_value != 0)
+    {
+        cout<<list[ind].question<<endl<<"Yes/No?"<<endl;
+        cin>>input;
+        cin.ignore();
+        if(toupper(input) == 'Y')
+            ind = list[ind].first_value;
+        else
+            ind = list[ind].second_value;
+    }
+    cout<<"Is it?: "<<list[ind].answer<<endl<<"Yes/No"<<endl;
+    cin>>input;
+    cin.ignore();
+    if(toupper(input) == 'N')
+    {
+        list_update(list, n);
+        ind = n;
+    }
+}
