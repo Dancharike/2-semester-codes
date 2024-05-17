@@ -16,6 +16,7 @@ void read(line* &list, int &n);
 void write(line* list, int n);
 void list_update(line* &list, int &n);
 void game_play(line* list, int &n);
+void continue_close(bool &exit_game);
 int main()
 {
     int n;
@@ -61,7 +62,7 @@ void write(line* list, int n)
 {
     ofstream f1("data_updated.txt");
     f1 << n << endl;
-    for (int i = 0; i < n; ++i)
+    for (int i = 0; i < n; i++)
     {
         f1 << list[i].number << " " << list[i].first_value << " " << list[i].second_value << " ";
         if (list[i].first_value != 0 || list[i].second_value != 0)
@@ -114,7 +115,7 @@ void game_play(line* list, int &n)
     while (!exit_game)
     {
         random_number=rand()%3+1; //random number that will be used in the future as a number of question
-        used_number=random_number; //used number cannot be used twice by program 
+        used_number=random_number; //used number cannot be used twice by program
 
         cout << "----------------------------------" << endl;
         cout << "This is decision tree game!" << endl;
@@ -131,39 +132,14 @@ void game_play(line* list, int &n)
             {
                 cout << "Hello world!" << endl;
                 //There should be a one part of the code below!
-                cout<<"Would you like to continue?"<<endl<<"Yes/No?"<<endl;
-                cin>>input;
-                if(toupper(input) == 'N')
-                {
-                    exit_game=true;
-                }
-                else
-                {
-                    bool valid_input = false;
-                    while (!valid_input)
-                    {
-                        valid_input = true;
-                    }
-                }
+                continue_close(exit_game);
                 break;
             }
             case '2':
             {
                 cout << "Enter your question:" << endl;
-                cout<<"Would you like to continue?"<<endl<<"Yes/No?"<<endl;
-                cin>>input;
-                if(toupper(input) == 'N')
-                {
-                    exit_game=true;
-                }
-                else
-                {
-                    bool valid_input = false;
-                    while (!valid_input)
-                    {
-                        valid_input = true;
-                    }
-                }
+                //Another part of code
+                continue_close(exit_game);
                 break;
             }
             case '3':
@@ -209,4 +185,15 @@ void game_play(line* list, int &n)
         list_update(list, n);
         ind = n;
     }*/
+}
+//------------------------------------------------------
+void continue_close(bool &exit_game)
+{
+    char input;
+    cout<<"Would you like to continue?"<<endl<<"Yes/No?"<<endl;
+    cin>>input;
+    if(toupper(input) == 'N')
+    {
+        exit_game=true;
+    }
 }
