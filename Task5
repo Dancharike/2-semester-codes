@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <cstdlib>
+#include <ctime>
 
 using namespace std;
 struct line
@@ -21,7 +22,7 @@ int main()
     line* list = 0;
     read(list, n);
     game_play(list, n);
-    list_update(list, n);
+    //list_update(list, n);
     write(list, n);
 
     delete[] list;
@@ -76,7 +77,7 @@ void write(line* list, int n)
     f1.close();
 }
 //------------------------------------------------------
-void list_update(line* &list, int &n)
+/*void list_update(line* &list, int &n)
 {
     string question, correct_answer;
     cout << "What is the correct answer?: ";
@@ -101,13 +102,96 @@ void list_update(line* &list, int &n)
     delete[] list;
     list = new_list;
     n += 2;
-}
+}*/
 //------------------------------------------------------
 void game_play(line* list, int &n)
 {
-    int ind=1;
-    char input;
-    while(list[ind].first_value != 0 || list[ind].second_value != 0)
+    int ind=1, random_number, used_number;
+    char input, menu_input;
+    srand(static_cast<unsigned int>(time(0)));
+    bool exit_game=false;
+
+    while (!exit_game)
+    {
+        random_number=rand()%3+1; //random number that will be used in the future as a number of question
+        used_number=random_number; //used number cannot be used twice by program 
+
+        cout << "----------------------------------" << endl;
+        cout << "This is decision tree game!" << endl;
+        cout << "Please choose your option:" << endl;
+        cout << "----------------------------------" << endl;
+        cout << "1. Play the game" << endl;
+        cout << "2. Add your questions" << endl;
+        cout << "3. Close the game" << endl;
+        cin >> menu_input;
+
+        switch(menu_input)
+        {
+            case '1':
+            {
+                cout << "Hello world!" << endl;
+                //There should be a one part of the code below!
+                cout<<"Would you like to continue?"<<endl<<"Yes/No?"<<endl;
+                cin>>input;
+                if(toupper(input) == 'N')
+                {
+                    exit_game=true;
+                }
+                else
+                {
+                    bool valid_input = false;
+                    while (!valid_input)
+                    {
+                        valid_input = true;
+                    }
+                }
+                break;
+            }
+            case '2':
+            {
+                cout << "Enter your question:" << endl;
+                cout<<"Would you like to continue?"<<endl<<"Yes/No?"<<endl;
+                cin>>input;
+                if(toupper(input) == 'N')
+                {
+                    exit_game=true;
+                }
+                else
+                {
+                    bool valid_input = false;
+                    while (!valid_input)
+                    {
+                        valid_input = true;
+                    }
+                }
+                break;
+            }
+            case '3':
+            {
+                cout<<"Do you want to close the game? (Yes/No)"<<endl;
+                cin>>input;
+                if(toupper(input) == 'Y')
+                {
+                    exit_game = true;
+                }
+                else
+                {
+                    bool valid_input = false;
+                    while (!valid_input)
+                    {
+                        valid_input=true;
+                    }
+                }
+                break;
+            }
+            default:
+            {
+                cout << "Invalid option, please make sure you are entering 1, 2, or 3!" << endl;
+                break;
+            }
+        }
+    }
+    /*while(list[ind].first_value != 0 || list[ind].second_value != 0)
     {
         cout<<list[ind].question<<endl<<"Yes/No?"<<endl;
         cin>>input;
@@ -124,5 +208,5 @@ void game_play(line* list, int &n)
     {
         list_update(list, n);
         ind = n;
-    }
+    }*/
 }
