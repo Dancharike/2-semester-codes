@@ -6,66 +6,81 @@
 #include <string>
 
 using namespace std;
-
-struct Line {
-    int number;
-    int first_value;
-    int second_value;
+struct Line
+{
+    int number;  // id
+    int first_value;  // lid
+    int second_value;  //rid
     string question;
     string answer;
 };
-
 void read(vector<Line>& list);
 void write(const vector<Line>& list);
 void list_update(vector<Line>& list, int& last_index, int current_index);
 void game_play(vector<Line>& list);
 void continue_close(bool& exit_game);
+void add_question(vector<Line>& list, int& last_index);
 
-int main() {
+int main()
+{
     vector<Line> list;
     read(list);
     game_play(list);
     write(list);
-    return 0;
 }
-
-void read(vector<Line>& list) {
+//-------------------------------------------------------
+void read(vector<Line>& list)
+{
+    int n;
     ifstream f1("data.txt");
-    if (!f1.is_open()) {
+    if (!f1.is_open())
+    {
         cerr << "Error with opening file!" << endl;
         exit(1);
     }
-    int n;
+
     f1 >> n;
     f1.ignore();
     list.resize(n);
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; i++)
+    {
         f1 >> list[i].number >> list[i].first_value >> list[i].second_value;
         f1.ignore();
-        if (list[i].first_value != 0 || list[i].second_value != 0) {
+        if (list[i].first_value != 0 || list[i].second_value != 0)
+        {
             getline(f1, list[i].question);
-        } else {
+        }
+        else
+        {
             getline(f1, list[i].answer);
         }
     }
+
     f1.close();
 }
-
-void write(const vector<Line>& list) {
-    ofstream f1("data_updated.txt");
+//-------------------------------------------------------
+void write(const vector<Line>& list)
+{
+    ofstream f1("data.txt");
     f1 << list.size() << endl;
-    for (const auto& item : list) {
+    for (const auto& item : list)
+    {
         f1 << item.number << " " << item.first_value << " " << item.second_value << " ";
-        if (item.first_value != 0 || item.second_value != 0) {
+        if (item.first_value != 0 || item.second_value != 0)
+        {
             f1 << item.question << endl;
-        } else {
+        }
+        else
+        {
             f1 << item.answer << endl;
         }
     }
+
     f1.close();
 }
-
-void list_update(vector<Line>& list, int& last_index, int current_index) {
+//-------------------------------------------------------
+void list_update(vector<Line>& list, int& last_index, int current_index)
+{
     string question, correct_answer;
     cout << "What is the correct answer?: ";
     cin.ignore();
@@ -78,8 +93,8 @@ void list_update(vector<Line>& list, int& last_index, int current_index) {
 
     Line new_question;
     new_question.question = question;
-    new_question.number = ++last_index;
-    new_question.first_value = ++last_index;
+    new_question.number = last_index++;
+    new_question.first_value = last_index++;
     new_question.second_value = old_answer.number;
 
     Line new_answer;
@@ -95,15 +110,17 @@ void list_update(vector<Line>& list, int& last_index, int current_index) {
 
     last_index = new_answer.number; // Update the last index
 }
-
-void game_play(vector<Line>& list) {
+//-------------------------------------------------------
+void game_play(vector<Line>& list)
+{
     int ind;
     char input, menu_input;
-    srand(static_cast<unsigned int>(time(0)));
+    srand(static_cast<unsigned int>(time(0)));  // Used it for implementing rand()
     bool exit_game = false;
     int last_index = list.size() - 1;
 
-    while (!exit_game) {
+    while (!exit_game)
+    {
         cout << "----------------------------------" << endl;
         cout << "This is decision tree game!" << endl;
         cout << "Please choose your option:" << endl;
@@ -113,69 +130,107 @@ void game_play(vector<Line>& list) {
         cout << "3. Close the game" << endl;
         cin >> menu_input;
 
-        switch (menu_input) {
-            case '1': {
+        switch (menu_input)
+        {
+            case '1':
+            {
                 vector<int> valid_indices;
-                for (size_t i = 0; i < list.size(); ++i) {
-                    if (list[i].first_value != 0 || list[i].second_value != 0) {
+                for (size_t i = 0; i < list.size(); i++)
+                {
+                    if (list[i].first_value != 0 || list[i].second_value != 0)
+                    {
                         valid_indices.push_back(i);
                     }
                 }
-
-                if (valid_indices.empty()) {
+                if (valid_indices.empty())
+                {
                     cout << "No valid questions available." << endl;
                     continue_close(exit_game);
                     break;
                 }
-
-                ind = valid_indices[rand() % valid_indices.size()];
-
-                while (list[ind].first_value != 0 || list[ind].second_value != 0) {
+                ind = valid_indices[rand() % valid_indices.size()];  // Generate random number that will be used as first question id
+                while (list[ind].first_value != 0 || list[ind].second_value != 0)
+                {
                     cout << list[ind].question << endl << "Yes/No?" << endl;
                     cin >> input;
                     cin.ignore();
-                    if (toupper(input) == 'Y') {
+                    if (toupper(input) == 'Y')
+                    {
                         ind = list[ind].first_value;
-                    } else {
+                    }
+                    else
+                    {
                         ind = list[ind].second_value;
                     }
                 }
-                cout << "Is it?: " << list[ind].answer << endl << "Yes/No" << endl;
+                cout << "Is it " << list[ind].answer << "?" << endl << "Yes/No" << endl;
                 cin >> input;
                 cin.ignore();
-                if (toupper(input) == 'N') {
+                if (toupper(input) == 'N')
+                {
                     list_update(list, last_index, ind);
                 }
                 continue_close(exit_game);
                 break;
             }
-            case '2': {
-                int current_index = list.size() - 1;
-                list_update(list, last_index, current_index);
+            case '2':
+            {
+                add_question(list, last_index);  // adds new user's question
                 continue_close(exit_game);
                 break;
             }
-            case '3': {
+            case '3':
+            {
                 cout << "Do you want to close the game? (Yes/No)" << endl;
                 cin >> input;
-                if (toupper(input) == 'Y') {
+                if (toupper(input) == 'Y')
+                {
                     exit_game = true;
                 }
                 break;
             }
-            default: {
+            default:
+            {
                 cout << "Invalid option, please make sure you are entering 1, 2, or 3!" << endl;
                 break;
             }
         }
     }
 }
-
-void continue_close(bool& exit_game) {
+//-------------------------------------------------------
+void continue_close(bool& exit_game)
+{
     char input;
     cout << "Would you like to continue?" << endl << "Yes/No?" << endl;
     cin >> input;
-    if (toupper(input) == 'N') {
+    if (toupper(input) == 'N')
+    {
         exit_game = true;
     }
+}
+//-------------------------------------------------------
+void add_question(vector<Line>& list, int& last_index)
+{
+    string question, correct_answer;
+    cout << "Enter the new question:" << endl;
+    cin.ignore();
+    getline(cin, question);
+    cout << "What is the correct answer for this question?: ";
+    getline(cin, correct_answer);
+
+    Line new_question;
+    new_question.question = question;  // new user question
+    new_question.number = last_index++;  // new question id
+    new_question.first_value = last_index++;  //lid
+    new_question.second_value = list.size() - 1;  //rid
+
+    Line new_answer;
+    new_answer.answer = correct_answer;
+    new_answer.number = last_index;
+    new_answer.first_value = 0;
+    new_answer.second_value = 0;
+
+    list.push_back(new_question);  // add to the list new user question
+    list.push_back(new_answer);  // add to the list new user answer
+    cout << "New question added successfully!" << endl;
 }
