@@ -2,121 +2,108 @@
 #include <fstream>
 #include <cstdlib>
 #include <ctime>
+#include <vector>
+#include <string>
 
 using namespace std;
-struct line
-{
+
+struct Line {
     int number;
     int first_value;
     int second_value;
     string question;
     string answer;
 };
-void read(line* &list, int &n);
-void write(line* list, int n);
-void list_update(line* &list, int &n);
-void game_play(line* list, int &n);
-void continue_close(bool &exit_game);
-int main()
-{
-    int n;
-    line* list = 0;
-    read(list, n);
-    game_play(list, n);
-    //list_update(list, n);
-    write(list, n);
 
-    delete[] list;
+void read(vector<Line>& list);
+void write(const vector<Line>& list);
+void list_update(vector<Line>& list, int& last_index, int current_index);
+void game_play(vector<Line>& list);
+void continue_close(bool& exit_game);
+
+int main() {
+    vector<Line> list;
+    read(list);
+    game_play(list);
+    write(list);
+    return 0;
 }
-//------------------------------------------------------
-void read(line* &list, int &n)
-{
+
+void read(vector<Line>& list) {
     ifstream f1("data.txt");
-    if (!f1.is_open())
-    {
+    if (!f1.is_open()) {
         cerr << "Error with opening file!" << endl;
         exit(1);
     }
-
+    int n;
     f1 >> n;
     f1.ignore();
-    list = new line[n];
-    for (int i = 0; i < n; ++i)
-    {
+    list.resize(n);
+    for (int i = 0; i < n; ++i) {
         f1 >> list[i].number >> list[i].first_value >> list[i].second_value;
         f1.ignore();
-        if (list[i].first_value != 0 || list[i].second_value != 0)
-        {
-            getline(f1 >> ws, list[i].question);
-        }
-        else
-        {
-            getline(f1 >> ws, list[i].answer);
+        if (list[i].first_value != 0 || list[i].second_value != 0) {
+            getline(f1, list[i].question);
+        } else {
+            getline(f1, list[i].answer);
         }
     }
-
     f1.close();
 }
-//------------------------------------------------------
-void write(line* list, int n)
-{
+
+void write(const vector<Line>& list) {
     ofstream f1("data_updated.txt");
-    f1 << n << endl;
-    for (int i = 0; i < n; i++)
-    {
-        f1 << list[i].number << " " << list[i].first_value << " " << list[i].second_value << " ";
-        if (list[i].first_value != 0 || list[i].second_value != 0)
-        {
-            f1 << list[i].question << endl;
-        }
-        else
-        {
-            f1 << list[i].answer << endl;
+    f1 << list.size() << endl;
+    for (const auto& item : list) {
+        f1 << item.number << " " << item.first_value << " " << item.second_value << " ";
+        if (item.first_value != 0 || item.second_value != 0) {
+            f1 << item.question << endl;
+        } else {
+            f1 << item.answer << endl;
         }
     }
-
     f1.close();
 }
-//------------------------------------------------------
-/*void list_update(line* &list, int &n)
-{
+
+void list_update(vector<Line>& list, int& last_index, int current_index) {
     string question, correct_answer;
     cout << "What is the correct answer?: ";
+    cin.ignore();
     getline(cin, correct_answer);
     cout << "What is the question distinguishing it?: ";
     getline(cin, question);
 
-    line* new_list = new line[n + 2];
-    for (int i = 0; i < n; i++)
-    {
-        new_list[i] = list[i];
-    }
-    new_list[n].question = question;
-    new_list[n].number = n;
-    new_list[n].first_value = 0;
-    new_list[n].second_value = 0;
-    new_list[n + 1].answer = correct_answer;
-    new_list[n + 1].number = n + 1;
-    new_list[n + 1].first_value = 0;
-    new_list[n + 1].second_value = 0;
+    int old_index = current_index;
+    Line& old_answer = list[old_index];
 
-    delete[] list;
-    list = new_list;
-    n += 2;
-}*/
-//------------------------------------------------------
-void game_play(line* list, int &n)
-{
-    int ind=1, random_number, used_number;
+    Line new_question;
+    new_question.question = question;
+    new_question.number = ++last_index;
+    new_question.first_value = ++last_index;
+    new_question.second_value = old_answer.number;
+
+    Line new_answer;
+    new_answer.answer = correct_answer;
+    new_answer.number = last_index;
+    new_answer.first_value = 0;
+    new_answer.second_value = 0;
+
+    old_answer.number = last_index; // Update old answer number
+
+    list.push_back(new_question);
+    list.push_back(new_answer);
+
+    last_index = new_answer.number; // Update the last index
+}
+
+void game_play(vector<Line>& list) {
+    int ind;
     char input, menu_input;
     srand(static_cast<unsigned int>(time(0)));
-    bool exit_game=false;
+    bool exit_game = false;
+    int last_index = list.size() - 1;
 
-    while (!exit_game)
-    {
-        random_number=rand()%3+1; //random number that will be used in the future as a number of question
-        used_number=random_number; //used number cannot be used twice by program
-
+    while (!exit_game) {
         cout << "----------------------------------" << endl;
         cout << "This is decision tree game!" << endl;
         cout << "Please choose your option:" << endl;
@@ -126,74 +113,69 @@ void game_play(line* list, int &n)
         cout << "3. Close the game" << endl;
         cin >> menu_input;
 
-        switch(menu_input)
-        {
-            case '1':
-            {
-                cout << "Hello world!" << endl;
-                //There should be a one part of the code below!
-                continue_close(exit_game);
-                break;
-            }
-            case '2':
-            {
-                cout << "Enter your question:" << endl;
-                //Another part of code
-                continue_close(exit_game);
-                break;
-            }
-            case '3':
-            {
-                cout<<"Do you want to close the game? (Yes/No)"<<endl;
-                cin>>input;
-                if(toupper(input) == 'Y')
-                {
-                    exit_game = true;
-                }
-                else
-                {
-                    bool valid_input = false;
-                    while (!valid_input)
-                    {
-                        valid_input=true;
+        switch (menu_input) {
+            case '1': {
+                vector<int> valid_indices;
+                for (size_t i = 0; i < list.size(); ++i) {
+                    if (list[i].first_value != 0 || list[i].second_value != 0) {
+                        valid_indices.push_back(i);
                     }
                 }
+
+                if (valid_indices.empty()) {
+                    cout << "No valid questions available." << endl;
+                    continue_close(exit_game);
+                    break;
+                }
+
+                ind = valid_indices[rand() % valid_indices.size()];
+
+                while (list[ind].first_value != 0 || list[ind].second_value != 0) {
+                    cout << list[ind].question << endl << "Yes/No?" << endl;
+                    cin >> input;
+                    cin.ignore();
+                    if (toupper(input) == 'Y') {
+                        ind = list[ind].first_value;
+                    } else {
+                        ind = list[ind].second_value;
+                    }
+                }
+                cout << "Is it?: " << list[ind].answer << endl << "Yes/No" << endl;
+                cin >> input;
+                cin.ignore();
+                if (toupper(input) == 'N') {
+                    list_update(list, last_index, ind);
+                }
+                continue_close(exit_game);
                 break;
             }
-            default:
-            {
+            case '2': {
+                int current_index = list.size() - 1;
+                list_update(list, last_index, current_index);
+                continue_close(exit_game);
+                break;
+            }
+            case '3': {
+                cout << "Do you want to close the game? (Yes/No)" << endl;
+                cin >> input;
+                if (toupper(input) == 'Y') {
+                    exit_game = true;
+                }
+                break;
+            }
+            default: {
                 cout << "Invalid option, please make sure you are entering 1, 2, or 3!" << endl;
                 break;
             }
         }
     }
-    /*while(list[ind].first_value != 0 || list[ind].second_value != 0)
-    {
-        cout<<list[ind].question<<endl<<"Yes/No?"<<endl;
-        cin>>input;
-        cin.ignore();
-        if(toupper(input) == 'Y')
-            ind = list[ind].first_value;
-        else
-            ind = list[ind].second_value;
-    }
-    cout<<"Is it?: "<<list[ind].answer<<endl<<"Yes/No"<<endl;
-    cin>>input;
-    cin.ignore();
-    if(toupper(input) == 'N')
-    {
-        list_update(list, n);
-        ind = n;
-    }*/
 }
-//------------------------------------------------------
-void continue_close(bool &exit_game)
-{
+
+void continue_close(bool& exit_game) {
     char input;
-    cout<<"Would you like to continue?"<<endl<<"Yes/No?"<<endl;
-    cin>>input;
-    if(toupper(input) == 'N')
-    {
-        exit_game=true;
+    cout << "Would you like to continue?" << endl << "Yes/No?" << endl;
+    cin >> input;
+    if (toupper(input) == 'N') {
+        exit_game = true;
     }
 }
